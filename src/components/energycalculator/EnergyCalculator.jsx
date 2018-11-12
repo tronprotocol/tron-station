@@ -184,7 +184,7 @@ class EnergyCalculator extends React.Component {
                   "Max energy limit",
                   this.state.maxEnergy.maxEnergyLimit
                 ]}
-                tableData={[[]]}
+                tableData={[]}
                 coloredColls={[1]}
                 colorsColls={["primary"]}
               />
