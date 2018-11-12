@@ -7,7 +7,7 @@ If you'd like to download and set up in local environment, please follow the dev
 
 Build Progress:
 ```
-git clone https://github.com/TronWatch/TronLink/
+git clone https://github.com/tronprotocol/tron-station.git
 yarn install
 yarn build
 yarn start
