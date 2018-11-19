@@ -222,15 +222,15 @@ class EnergyCalculator extends React.Component {
                       <option value={"0.000001"}>Sun</option>
                     </NativeSelect>
                   </GridItem>
+                  <GridItem xs={12} sm={12} md={12}>
+                    <Button
+                      color="rose"
+                      onClick={event => this.calcMaxEnergyLimit()}
+                    >
+                      Calculate
+                    </Button>
+                  </GridItem>
                 </GridContainer>
-                <GridItem xs={12} sm={12} md={12}>
-                  <Button
-                    color="rose"
-                    onClick={event => this.calcMaxEnergyLimit()}
-                  >
-                    Calculate
-                  </Button>
-                </GridItem>
               </form>
             </CardBody>
           </Card>
