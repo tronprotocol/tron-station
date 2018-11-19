@@ -1,12 +1,9 @@
-import FAQIco from "@material-ui/icons/QuestionAnswerOutlined";
 import EnergyCalcIco from "@material-ui/icons/OfflineBoltOutlined";
 import BPCalcIco from "@material-ui/icons/LineWeightOutlined";
 
 // components
 import EnergyCalculator from "components/energycalculator/EnergyCalculator.jsx";
 import BandWidthCalculator from "components/bandwidthcalculator/BandwidthCalculator.jsx";
-
-var faq = [];
 
 var appRoutes = [
   {
@@ -20,13 +17,6 @@ var appRoutes = [
     name: "Bandwidth Calculator",
     icon: BPCalcIco,
     component: BandWidthCalculator
-  },
-  {
-    collapse: true,
-    path: "/faq",
-    name: "FAQ",
-    icon: FAQIco,
-    views: faq
   },
   {
     redirect: true,

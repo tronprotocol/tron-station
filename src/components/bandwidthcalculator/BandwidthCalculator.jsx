@@ -8,6 +8,7 @@ import regularFormsStyle from "assets/jss/regularFormsStyle";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import NativeSelect from "@material-ui/core/NativeSelect";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import GridContainer from "components/common/GridContainer.jsx";
@@ -18,10 +19,10 @@ import CardBody from "components/common/CardBody.jsx";
 import CustomInput from "components/common/CustomInput.jsx";
 import Button from "components/common/Button.jsx";
 import Table from "components/common/Table.jsx";
-import EventEmitter from "services/eventEmitter.js";
 
 // services
 import calculator from "services/calculator.js";
+import EventEmitter from "services/eventEmitter.js";
 
 class BandWidthCalculator extends React.Component {
   constructor(props) {
@@ -30,6 +31,7 @@ class BandWidthCalculator extends React.Component {
       trxAmount: "",
       frozenBandwidthInit: "",
       frozenBandwidth: "",
+      frozenRatio: "1",
       hexAddress: "",
       maxBandwidth: {}
     };
@@ -49,7 +51,7 @@ class BandWidthCalculator extends React.Component {
   }
   async calcBandwidth(isInit) {
     let bp = await calculator.getFrozenBandwidth(
-      isInit ? 1 : this.state.trxAmount
+      isInit ? 1 : this.state.trxAmount * this.state.frozenRatio
     );
     if (isInit) {
       this.setState({
@@ -83,25 +85,43 @@ class BandWidthCalculator extends React.Component {
             </CardHeader>
             <CardBody>
               <form>
-                <CustomInput
-                  labelText="Please input frozen TRX amount"
-                  id="trx_amount"
-                  formControlProps={{
-                    fullWidth: true
-                  }}
-                  inputProps={{
-                    type: "text",
-                    defaultValue: this.state.trxAmount,
-                    onChange: event =>
-                      this.handleInputChange(event, "trxAmount")
-                  }}
-                />
-                <Button
-                  color="rose"
-                  onClick={event => this.calcBandwidth(false)}
-                >
-                  Calculate
-                </Button>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={9}>
+                    <CustomInput
+                      labelText="Frozen TRX amount"
+                      id="trx_amount"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      inputProps={{
+                        type: "text",
+                        defaultValue: this.state.trxAmount,
+                        onChange: event =>
+                          this.handleInputChange(event, "trxAmount")
+                      }}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={3}>
+                    <NativeSelect
+                      className={classes.selectBtn}
+                      defaultValue={this.state.frozenRatio}
+                      onChange={event =>
+                        this.handleInputChange(event, "frozenRatio")
+                      }
+                    >
+                      <option value={"1"}>Trx</option>
+                      <option value={"0.000001"}>Sun</option>
+                    </NativeSelect>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={9}>
+                    <Button
+                      color="rose"
+                      onClick={event => this.calcBandwidth(false)}
+                    >
+                      Calculate
+                    </Button>
+                  </GridItem>
+                </GridContainer>
               </form>
             </CardBody>
           </Card>
@@ -122,7 +142,8 @@ class BandWidthCalculator extends React.Component {
                       }}
                       inputProps={{
                         type: "text",
-                        value: this.state.frozenBandwidth
+                        value: this.state.frozenBandwidth,
+                        disabled: true
                       }}
                     />
                   </GridItem>
@@ -141,7 +162,7 @@ class BandWidthCalculator extends React.Component {
             <CardBody>
               <form>
                 <CustomInput
-                  labelText="Please input your hex address"
+                  labelText="Hex account address"
                   id="hex_address"
                   formControlProps={{
                     fullWidth: true
@@ -168,15 +189,19 @@ class BandWidthCalculator extends React.Component {
               <h4 className={classes.cardIconTitle}>Total Bandwidth Result</h4>
             </CardHeader>
             <CardBody>
-              <Table
-                striped
-                tableHead={[
-                  "Bandwidth Points",
-                  this.state.maxBandwidth.maxBandWidthLimit
-                ]}
-                tableData={[]}
-                coloredColls={[1]}
-                colorsColls={["primary"]}
+              <CustomInput
+                id="bp_result"
+                formControlProps={{
+                  fullWidth: true
+                }}
+                inputProps={{
+                  type: "text",
+                  value:
+                    this.state.maxBandwidth.maxBandWidthLimit === undefined
+                      ? ""
+                      : this.state.maxBandwidth.maxBandWidthLimit,
+                  disabled: true
+                }}
               />
               <ExpansionPanel>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>

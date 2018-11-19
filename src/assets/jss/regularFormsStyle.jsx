@@ -43,6 +43,15 @@ const regularFormsStyle = {
   },
   inputAdornmentIconError: {
     color: dangerColor + "!important"
+  },
+  selectBtn: {
+    fontWeight: 500,
+    paddingTop: "28px",
+    borderRadius: "2px",
+    fontSize: "15px",
+    "&:focus": {
+      backgroundColor: "#80bdff"
+    }
   }
 };
 

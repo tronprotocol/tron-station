@@ -19,7 +19,7 @@ import Sidebar from "components/common/Sidebar.jsx";
 import appRoutes from "routes/app.js";
 
 // images
-import bgImage from "assets/img/sidebar-bg.jpg";
+import bgImage from "assets/img/sidebar-bg.png";
 import logo from "assets/img/logo.png";
 
 const switchRoutes = (

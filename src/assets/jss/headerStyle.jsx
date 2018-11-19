@@ -89,6 +89,39 @@ const headerStyle = theme => ({
   sidebarMiniIcon: {
     width: "20px",
     height: "17px"
+  },
+  discordIcon: {
+    width: "30px",
+    height: "30px",
+    marginLeft: "10px",
+    marginRight: "10px"
+  },
+  githubIcon: {
+    width: "30px",
+    height: "30x",
+    marginRight: "15px"
+  },
+  overrides: {
+    MuiInput: {
+      "&:focus": {
+        background: "$labelcolor"
+      }
+    }
+  },
+  selectBtn: {
+    color: "#555555",
+    fontWeight: 500,
+    padding: "0",
+    borderRadius: "2px",
+    fontSize: "15px",
+    "&:focus": {
+      backgroundColor: "#80bdff"
+    }
+  },
+  mark: {
+    paddingTop: "6px",
+    paddingBottom: "7px",
+    marginRight: "10px"
   }
 });
 

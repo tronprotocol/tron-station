@@ -20,6 +20,8 @@ import calculator from "services/calculator.js";
 
 // styles
 import headerStyle from "assets/jss/headerStyle.jsx";
+import discordIco from "assets/img/discord-black.png";
+import githubIco from "assets/img/github-black.png";
 
 class Header extends React.Component {
   constructor(props) {
@@ -114,35 +116,67 @@ class Header extends React.Component {
             </Button>
           </div>
           <Hidden smDown implementation="css">
-            <div>
+            <div className={classes.mark}>
               <strong>Last Updated Block: {this.state.block}</strong>
             </div>
           </Hidden>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <Hidden smDown implementation="css">
-            <div>
+            <div className={classes.mark}>
               <strong>
                 Total Energy Weight: {this.state.totalEnergyWeight}
               </strong>
             </div>
           </Hidden>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <Hidden smDown implementation="css">
-            <div>
+            <div className={classes.mark}>
               <strong>Total Net Weight: {this.state.totalNetWeight}</strong>
+              &nbsp;&nbsp;&nbsp;
+              <strong>|</strong>
             </div>
           </Hidden>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <Hidden sdUp implementation="css">
+          <Hidden implementation="css">
             <NativeSelect
               name="net"
+              disableUnderline={true}
               defaultValue={this.state.net}
-              className={classes.selectEmpty}
+              className={classes.selectBtn}
               onChange={event => this.handleChangeNet(event)}
             >
-              <option value={"MainNet"}>main net</option>
-              <option value={"ShastaNet"}>shasta testnet</option>
+              <option value={"MainNet"}>Main Net</option>
+              <option value={"ShastaNet"}>Test Net</option>
             </NativeSelect>
+          </Hidden>
+          <Hidden smDown implementation="css">
+            <div>
+              &nbsp;&nbsp;&nbsp;
+              <strong>|</strong>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://discordapp.com/invite/GsRgsTD"
+              >
+                <img
+                  className={classes.discordIcon}
+                  src={discordIco}
+                  alt="discord"
+                />
+              </a>
+            </div>
+          </Hidden>
+          <Hidden smDown implementation="css">
+            <div>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://github.com/tronprotocol/tron-station"
+              >
+                <img
+                  className={classes.githubIcon}
+                  src={githubIco}
+                  alt="github"
+                />
+              </a>
+            </div>
           </Hidden>
           <Hidden mdUp implementation="css">
             <Button
