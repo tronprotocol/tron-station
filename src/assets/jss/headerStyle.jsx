@@ -101,22 +101,11 @@ const headerStyle = theme => ({
     height: "30x",
     marginRight: "15px"
   },
-  overrides: {
-    MuiInput: {
-      "&:focus": {
-        background: "$labelcolor"
-      }
-    }
-  },
   selectBtn: {
     color: "#555555",
     fontWeight: 500,
     padding: "0",
-    borderRadius: "2px",
-    fontSize: "15px",
-    "&:focus": {
-      backgroundColor: "#80bdff"
-    }
+    fontSize: "15px"
   },
   mark: {
     paddingTop: "6px",

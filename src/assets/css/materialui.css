@@ -2572,3 +2572,7 @@ img {
       width: 100%; }
   .picture-container .picture-src {
     width: 100%; }
+
+.classes-state-root {
+  background-color: #000
+}

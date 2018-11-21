@@ -3,6 +3,7 @@ import React from "react";
 // styles
 import { withStyles } from "@material-ui/core/styles";
 import regularFormsStyle from "assets/jss/regularFormsStyle";
+import formulaIco from "assets/img/question-black.png";
 
 // components
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
@@ -19,6 +20,7 @@ import CardBody from "components/common/CardBody.jsx";
 import CustomInput from "components/common/CustomInput.jsx";
 import Button from "components/common/Button.jsx";
 import Table from "components/common/Table.jsx";
+import Popover from "@material-ui/core/Popover";
 
 // services
 import calculator from "services/calculator.js";
@@ -33,7 +35,10 @@ class BandWidthCalculator extends React.Component {
       frozenBandwidth: "",
       frozenRatio: "1",
       hexAddress: "",
-      maxBandwidth: {}
+      maxBandwidth: {},
+      formulaState: false,
+      anchorElState: null,
+      formula: ""
     };
   }
   componentDidMount() {
@@ -47,21 +52,40 @@ class BandWidthCalculator extends React.Component {
     EventEmitter.unSubscribe("changeNet");
   }
   handleInputChange(event, name) {
-    this.setState({ [name]: event.target.value });
+    let v = event.target.value;
+    switch (name) {
+      case "formulaState":
+        this.setState({
+          anchorElState: this.state.formulaState ? null : event.currentTarget
+        });
+        this.setState({ formulaState: this.state.formulaState ? false : true });
+        break;
+      default:
+        this.setState({ [name]: v });
+        break;
+    }
   }
   async calcBandwidth(isInit) {
-    let bp = await calculator.getFrozenBandwidth(
+    let data = await calculator.getFrozenBandwidth(
       isInit ? 1 : this.state.trxAmount * this.state.frozenRatio
     );
     if (isInit) {
       this.setState({
-        frozenBandwidthInit: bp,
+        frozenBandwidthInit: data.bp,
         frozenBandwidth: "",
-        maxBandwidth: {}
+        maxBandwidth: {},
+        furmula:
+          "1 TRX = TotalNetLimit (" +
+          data.accountResource.TotalNetLimit.toLocaleString() +
+          ") / TotalNetWeight (" +
+          data.accountResource.TotalNetWeight.toLocaleString() +
+          ") = " +
+          data.bp +
+          " Bandwidth"
       });
     } else {
       this.setState({
-        frozenBandwidth: bp
+        frozenBandwidth: data.bp
       });
     }
   }
@@ -81,7 +105,33 @@ class BandWidthCalculator extends React.Component {
                 <strong>
                   1 TRX = {this.state.frozenBandwidthInit} BandWidth
                 </strong>
+                <img
+                  className={classes.formulaIcon}
+                  src={formulaIco}
+                  alt="formula"
+                  onClick={event =>
+                    this.handleInputChange(event, "formulaState")
+                  }
+                />
               </h4>
+              <Popover
+                id="formula-popover"
+                open={this.state.formulaState}
+                anchorEl={this.state.anchorElState}
+                onClose={event => this.handleInputChange(event, "formulaState")}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right"
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left"
+                }}
+              >
+                <Typography className={classes.formulaContent}>
+                  <strong>{this.state.furmula}</strong>
+                </Typography>
+              </Popover>
             </CardHeader>
             <CardBody>
               <form>

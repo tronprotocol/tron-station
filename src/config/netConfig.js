@@ -11,6 +11,6 @@ export const nets = {
     fullNode: "https://api.shasta.trongrid.io",
     solidityNode: "https://api.shasta.trongrid.io",
     eventServer: "https://api.shasta.trongrid.io",
-    defaultAddress: "41928C9AF0651632157EF27A2CF17CA72C575A4D21"
+    defaultAddress: "41ECA4D26A37976DFB63AEEC832493224DFD3C99EA"
   }
 };

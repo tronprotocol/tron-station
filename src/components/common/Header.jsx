@@ -20,6 +20,8 @@ import calculator from "services/calculator.js";
 
 // styles
 import headerStyle from "assets/jss/headerStyle.jsx";
+import { MuiThemeProvider } from "@material-ui/core/styles";
+import muiTheme from "assets/jss/muiStyle.jsx";
 import discordIco from "assets/img/discord-black.png";
 import githubIco from "assets/img/github-black.png";
 
@@ -67,8 +69,8 @@ class Header extends React.Component {
     let resource = await calculator.getAccountResources();
     let blockNum = await calculator.getLastUpdateBlock();
     this.setState({
-      totalEnergyWeight: resource.TotalEnergyWeight,
-      totalNetWeight: resource.TotalNetWeight,
+      totalEnergyWeight: resource.TotalEnergyWeight.toLocaleString(),
+      totalNetWeight: resource.TotalNetWeight.toLocaleString(),
       block: blockNum
     });
   }
@@ -110,7 +112,6 @@ class Header extends React.Component {
             </div>
           </Hidden>
           <div className={classes.flex}>
-            {/* Here we create navbar brand, based on route name */}
             <Button href="#" className={classes.title} color="transparent">
               {this.makeBrand()}
             </Button>
@@ -135,16 +136,18 @@ class Header extends React.Component {
             </div>
           </Hidden>
           <Hidden implementation="css">
-            <NativeSelect
-              name="net"
-              disableUnderline={true}
-              defaultValue={this.state.net}
-              className={classes.selectBtn}
-              onChange={event => this.handleChangeNet(event)}
-            >
-              <option value={"MainNet"}>Main Net</option>
-              <option value={"ShastaNet"}>Test Net</option>
-            </NativeSelect>
+            <MuiThemeProvider theme={muiTheme}>
+              <NativeSelect
+                name="net"
+                disableUnderline={true}
+                defaultValue={this.state.net}
+                className={classes.selectBtn}
+                onChange={event => this.handleChangeNet(event)}
+              >
+                <option value={"MainNet"}>Main Net</option>
+                <option value={"ShastaNet"}>Test Net</option>
+              </NativeSelect>
+            </MuiThemeProvider>
           </Hidden>
           <Hidden smDown implementation="css">
             <div>

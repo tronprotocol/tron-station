@@ -3,6 +3,7 @@ import React from "react";
 // styles
 import { withStyles } from "@material-ui/core/styles";
 import regularFormsStyle from "assets/jss/regularFormsStyle";
+import formulaIco from "assets/img/question-black.png";
 
 // components
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
@@ -11,6 +12,8 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NativeSelect from "@material-ui/core/NativeSelect";
+import { MuiThemeProvider } from "@material-ui/core/styles";
+import muiTheme from "assets/jss/muiStyle.jsx";
 import GridContainer from "components/common/GridContainer.jsx";
 import GridItem from "components/common/GridItem.jsx";
 import Card from "components/common/Card.jsx";
@@ -19,6 +22,7 @@ import CardBody from "components/common/CardBody.jsx";
 import CustomInput from "components/common/CustomInput.jsx";
 import Button from "components/common/Button.jsx";
 import Table from "components/common/Table.jsx";
+import Popover from "@material-ui/core/Popover";
 
 // services
 import calculator from "services/calculator.js";
@@ -36,7 +40,11 @@ class EnergyCalculator extends React.Component {
       feeLimit: "",
       feeLimitState: "",
       feeLimitRatio: "1",
-      maxEnergy: {}
+      maxEnergy: {},
+      TotalEnergyWeight: "",
+      formulaState: false,
+      anchorElState: null,
+      formula: ""
     };
   }
   componentDidMount() {
@@ -58,25 +66,40 @@ class EnergyCalculator extends React.Component {
         } else {
           this.setState({ feeLimitState: "error" });
         }
+        this.setState({ [name]: v });
+        break;
+      case "formulaState":
+        this.setState({
+          anchorElState: this.state.formulaState ? null : event.currentTarget
+        });
+        this.setState({ formulaState: this.state.formulaState ? false : true });
         break;
       default:
+        this.setState({ [name]: v });
         break;
     }
-    this.setState({ [name]: v });
   }
   async calcEnergy(isInit) {
-    let energy = await calculator.getFrozenEnergy(
+    let data = await calculator.getFrozenEnergy(
       isInit ? 1 : this.state.trxAmount * this.state.frozenRatio
     );
     if (isInit) {
       this.setState({
-        frozenEnergyInit: energy,
+        frozenEnergyInit: data.energy,
         frozenEnergy: "",
-        maxEnergy: {}
+        maxEnergy: {},
+        furmula:
+          "1 TRX = TotalEnergyLimit (" +
+          data.accountResource.TotalEnergyLimit.toLocaleString() +
+          ") / TotalEnergyWeight (" +
+          data.accountResource.TotalEnergyWeight.toLocaleString() +
+          ") = " +
+          data.energy +
+          " energy"
       });
     } else {
       this.setState({
-        frozenEnergy: energy
+        frozenEnergy: data.energy
       });
     }
   }
@@ -99,7 +122,33 @@ class EnergyCalculator extends React.Component {
               <h4 className={classes.cardIconTitle}>
                 Calculate Energy by freezing TRX &nbsp;&nbsp;
                 <strong>1 TRX = {this.state.frozenEnergyInit} Energy</strong>
+                <img
+                  className={classes.formulaIcon}
+                  src={formulaIco}
+                  alt="formula"
+                  onClick={event =>
+                    this.handleInputChange(event, "formulaState")
+                  }
+                />
               </h4>
+              <Popover
+                id="formula-popover"
+                open={this.state.formulaState}
+                anchorEl={this.state.anchorElState}
+                onClose={event => this.handleInputChange(event, "formulaState")}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right"
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left"
+                }}
+              >
+                <Typography className={classes.formulaContent}>
+                  <strong>{this.state.furmula}</strong>
+                </Typography>
+              </Popover>
             </CardHeader>
             <CardBody>
               <form>
@@ -120,16 +169,18 @@ class EnergyCalculator extends React.Component {
                     />
                   </GridItem>
                   <GridItem xs={12} sm={12} md={3}>
-                    <NativeSelect
-                      className={classes.selectBtn}
-                      defaultValue={this.state.frozenRatio}
-                      onChange={event =>
-                        this.handleInputChange(event, "frozenRatio")
-                      }
-                    >
-                      <option value={"1"}>Trx</option>
-                      <option value={"0.000001"}>Sun</option>
-                    </NativeSelect>
+                    <MuiThemeProvider theme={muiTheme}>
+                      <NativeSelect
+                        className={classes.selectBtn}
+                        defaultValue={this.state.frozenRatio}
+                        onChange={event =>
+                          this.handleInputChange(event, "frozenRatio")
+                        }
+                      >
+                        <option value={"1"}>Trx</option>
+                        <option value={"0.000001"}>Sun</option>
+                      </NativeSelect>
+                    </MuiThemeProvider>
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12}>
                     <Button
@@ -211,16 +262,18 @@ class EnergyCalculator extends React.Component {
                     />
                   </GridItem>
                   <GridItem xs={12} sm={12} md={3}>
-                    <NativeSelect
-                      className={classes.selectBtn}
-                      defaultValue={this.state.frozenRatio}
-                      onChange={event =>
-                        this.handleInputChange(event, "feeLimitRatio")
-                      }
-                    >
-                      <option value={"1"}>Trx</option>
-                      <option value={"0.000001"}>Sun</option>
-                    </NativeSelect>
+                    <MuiThemeProvider theme={muiTheme}>
+                      <NativeSelect
+                        className={classes.selectBtn}
+                        defaultValue={this.state.frozenRatio}
+                        onChange={event =>
+                          this.handleInputChange(event, "feeLimitRatio")
+                        }
+                      >
+                        <option value={"1"}>Trx</option>
+                        <option value={"0.000001"}>Sun</option>
+                      </NativeSelect>
+                    </MuiThemeProvider>
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12}>
                     <Button

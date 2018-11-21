@@ -47,11 +47,17 @@ const regularFormsStyle = {
   selectBtn: {
     fontWeight: 500,
     paddingTop: "28px",
-    borderRadius: "2px",
-    fontSize: "15px",
-    "&:focus": {
-      backgroundColor: "#80bdff"
-    }
+    fontSize: "15px"
+  },
+  formulaIcon: {
+    width: "15px",
+    height: "15x",
+    marginLeft: "5px",
+    marginBottom: "15px",
+    cursor: "pointer"
+  },
+  formulaContent: {
+    margin: "20px"
   }
 };
 
