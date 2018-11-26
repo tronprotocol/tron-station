@@ -10,6 +10,8 @@ import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import NativeSelect from "@material-ui/core/NativeSelect";
+import { MuiThemeProvider } from "@material-ui/core/styles";
+import muiTheme from "assets/jss/muiStyle.jsx";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import GridContainer from "components/common/GridContainer.jsx";
@@ -152,16 +154,18 @@ class BandWidthCalculator extends React.Component {
                     />
                   </GridItem>
                   <GridItem xs={12} sm={12} md={3}>
-                    <NativeSelect
-                      className={classes.selectBtn}
-                      defaultValue={this.state.frozenRatio}
-                      onChange={event =>
-                        this.handleInputChange(event, "frozenRatio")
-                      }
-                    >
-                      <option value={"1"}>Trx</option>
-                      <option value={"0.000001"}>Sun</option>
-                    </NativeSelect>
+                    <MuiThemeProvider theme={muiTheme}>
+                      <NativeSelect
+                        className={classes.selectBtn}
+                        defaultValue={this.state.frozenRatio}
+                        onChange={event =>
+                          this.handleInputChange(event, "frozenRatio")
+                        }
+                      >
+                        <option value={"1"}>Trx</option>
+                        <option value={"0.000001"}>Sun</option>
+                      </NativeSelect>
+                    </MuiThemeProvider>
                   </GridItem>
                   <GridItem xs={12} sm={12} md={9}>
                     <Button
