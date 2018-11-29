@@ -62,10 +62,11 @@ class Calculator {
 
   async getFrozenEnergy(trx) {
     const resource = await this.getAccountResources();
-    return (
+    let energy = (
       (trx * resource.TotalEnergyLimit) /
       resource.TotalEnergyWeight
-    ).toFixed(4);
+    ).toLocaleString();
+    return { energy: energy, accountResource: resource };
   }
 
   async getMaxEnergyLimit(address, feeLimit) {
@@ -79,7 +80,7 @@ class Calculator {
 
     // remaining energy limit
     ar.balance = this._filterData(account.balance) / 1000000; // trx
-    ar.balanceEnergy = this._filterData(account.balance) / 100;
+    ar.balanceEnergy = this._filterData(account.balance) / 20;
     ar.energyLimit = this._filterData(res.EnergyLimit); // trx
     ar.energyUsed = this._filterData(res.EnergyUsed);
     ar.remainEnergyLimit = ar.energyLimit + ar.balanceEnergy - ar.energyUsed;
@@ -95,6 +96,8 @@ class Calculator {
       ar.maxEnergyLimit = ar.remainEnergyLimit;
     }
 
+    ar.maxEnergyLimit = ar.maxEnergyLimit.toLocaleString();
+
     ar.totalEnergyLimit = res.TotalEnergyLimit;
     ar.totalEnergyWeight = res.TotalEnergyWeight;
     ar.ratio = ratio.toFixed(4);
@@ -104,9 +107,11 @@ class Calculator {
 
   async getFrozenBandwidth(trx) {
     const resource = await this.getAccountResources();
-    return ((trx * resource.TotalNetLimit) / resource.TotalNetWeight).toFixed(
-      4
-    );
+    let bp = (
+      (trx * resource.TotalNetLimit) /
+      resource.TotalNetWeight
+    ).toLocaleString();
+    return { bp: bp, accountResource: resource };
   }
 
   async getMaxBandWidthLimit(address) {
@@ -124,11 +129,12 @@ class Calculator {
     ar.freeBandWidthUsed = this._filterData(res.freeNetUsed);
     ar.bandWidthLimit = this._filterData(res.NetLimit);
     ar.bandWidthUsed = this._filterData(res.NetUsed);
-    ar.maxBandWidthLimit =
+    ar.maxBandWidthLimit = (
       ar.freeBandWidthLimit +
       ar.bandWidthLimit -
       ar.freeBandWidthUsed -
-      ar.bandWidthUsed;
+      ar.bandWidthUsed
+    ).toLocaleString();
 
     ar.totalBandWidthLimit = res.TotalNetLimit;
     ar.totalBandWidthWeight = res.TotalNetWeight;

@@ -148,7 +148,7 @@ const sidebarStyle = theme => ({
     padding: "5px 0px",
     fontSize: "18px",
     whiteSpace: "nowrap",
-    fontWeight: "400",
+    fontWeight: "500",
     lineHeight: "30px",
     overflow: "hidden",
     "&,&:hover,&:focus": {
@@ -166,7 +166,7 @@ const sidebarStyle = theme => ({
     transform: "translate3d(25px, 0, 0)"
   },
   img: {
-    width: "35px",
+    width: "30px",
     verticalAlign: "middle",
     border: "0"
   },
@@ -261,7 +261,8 @@ const sidebarStyle = theme => ({
     position: "relative",
     display: "block",
     height: "auto",
-    whiteSpace: "nowrap"
+    whiteSpace: "nowrap",
+    fontWeight: 400
   },
   userItemText: {
     lineHeight: "22px"

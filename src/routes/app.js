@@ -1,4 +1,3 @@
-import FAQIco from "@material-ui/icons/QuestionAnswerOutlined";
 import EnergyCalcIco from "@material-ui/icons/OfflineBoltOutlined";
 import BPCalcIco from "@material-ui/icons/LineWeightOutlined";
 import UnitCalcIco from "@material-ui/icons/FiberSmartRecord";
@@ -7,8 +6,6 @@ import UnitCalcIco from "@material-ui/icons/FiberSmartRecord";
 import EnergyCalculator from "components/energycalculator/EnergyCalculator.jsx";
 import BandWidthCalculator from "components/bandwidthcalculator/BandwidthCalculator.jsx";
 import UnitCalculator from "components/unitcalculator/UnitCalculator.jsx";
-
-var faq = [];
 
 var appRoutes = [
   {

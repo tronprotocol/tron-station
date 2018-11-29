@@ -43,6 +43,21 @@ const regularFormsStyle = {
   },
   inputAdornmentIconError: {
     color: dangerColor + "!important"
+  },
+  selectBtn: {
+    fontWeight: 500,
+    paddingTop: "28px",
+    fontSize: "15px"
+  },
+  formulaIcon: {
+    width: "15px",
+    height: "15x",
+    marginLeft: "5px",
+    marginBottom: "15px",
+    cursor: "pointer"
+  },
+  formulaContent: {
+    margin: "20px"
   }
 };
 

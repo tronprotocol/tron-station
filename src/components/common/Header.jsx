@@ -20,6 +20,10 @@ import calculator from "services/calculator.js";
 
 // styles
 import headerStyle from "assets/jss/headerStyle.jsx";
+import { MuiThemeProvider } from "@material-ui/core/styles";
+import muiTheme from "assets/jss/muiStyle.jsx";
+import discordIco from "assets/img/discord-black.png";
+import githubIco from "assets/img/github-black.png";
 
 class Header extends React.Component {
   constructor(props) {
@@ -65,8 +69,8 @@ class Header extends React.Component {
     let resource = await calculator.getAccountResources();
     let blockNum = await calculator.getLastUpdateBlock();
     this.setState({
-      totalEnergyWeight: resource.TotalEnergyWeight,
-      totalNetWeight: resource.TotalNetWeight,
+      totalEnergyWeight: resource.TotalEnergyWeight.toLocaleString(),
+      totalNetWeight: resource.TotalNetWeight.toLocaleString(),
       block: blockNum
     });
   }
@@ -108,41 +112,74 @@ class Header extends React.Component {
             </div>
           </Hidden>
           <div className={classes.flex}>
-            {/* Here we create navbar brand, based on route name */}
             <Button href="#" className={classes.title} color="transparent">
               {this.makeBrand()}
             </Button>
           </div>
           <Hidden smDown implementation="css">
-            <div>
+            <div className={classes.mark}>
               <strong>Last Updated Block: {this.state.block}</strong>
             </div>
           </Hidden>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <Hidden smDown implementation="css">
-            <div>
+            <div className={classes.mark}>
               <strong>
                 Total Energy Weight: {this.state.totalEnergyWeight}
               </strong>
             </div>
           </Hidden>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <Hidden smDown implementation="css">
-            <div>
+            <div className={classes.mark}>
               <strong>Total Net Weight: {this.state.totalNetWeight}</strong>
+              &nbsp;&nbsp;&nbsp;
+              <strong>|</strong>
             </div>
           </Hidden>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <Hidden sdUp implementation="css">
-            <NativeSelect
-              name="net"
-              defaultValue={this.state.net}
-              className={classes.selectEmpty}
-              onChange={event => this.handleChangeNet(event)}
-            >
-              <option value={"MainNet"}>main net</option>
-              <option value={"ShastaNet"}>shasta testnet</option>
-            </NativeSelect>
+          <Hidden implementation="css">
+            <MuiThemeProvider theme={muiTheme}>
+              <NativeSelect
+                name="net"
+                disableUnderline={true}
+                defaultValue={this.state.net}
+                className={classes.selectBtn}
+                onChange={event => this.handleChangeNet(event)}
+              >
+                <option value={"MainNet"}>Main Net</option>
+                <option value={"ShastaNet"}>Test Net</option>
+              </NativeSelect>
+            </MuiThemeProvider>
+          </Hidden>
+          <Hidden smDown implementation="css">
+            <div>
+              &nbsp;&nbsp;&nbsp;
+              <strong>|</strong>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://discordapp.com/invite/GsRgsTD"
+              >
+                <img
+                  className={classes.discordIcon}
+                  src={discordIco}
+                  alt="discord"
+                />
+              </a>
+            </div>
+          </Hidden>
+          <Hidden smDown implementation="css">
+            <div>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://github.com/tronprotocol/tron-station"
+              >
+                <img
+                  className={classes.githubIcon}
+                  src={githubIco}
+                  alt="github"
+                />
+              </a>
+            </div>
           </Hidden>
           <Hidden mdUp implementation="css">
             <Button

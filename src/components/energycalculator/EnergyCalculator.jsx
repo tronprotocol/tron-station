@@ -3,6 +3,7 @@ import React from "react";
 // styles
 import { withStyles } from "@material-ui/core/styles";
 import regularFormsStyle from "assets/jss/regularFormsStyle";
+import formulaIco from "assets/img/question-black.png";
 
 // components
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
@@ -10,6 +11,9 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import NativeSelect from "@material-ui/core/NativeSelect";
+import { MuiThemeProvider } from "@material-ui/core/styles";
+import muiTheme from "assets/jss/muiStyle.jsx";
 import GridContainer from "components/common/GridContainer.jsx";
 import GridItem from "components/common/GridItem.jsx";
 import Card from "components/common/Card.jsx";
@@ -18,10 +22,11 @@ import CardBody from "components/common/CardBody.jsx";
 import CustomInput from "components/common/CustomInput.jsx";
 import Button from "components/common/Button.jsx";
 import Table from "components/common/Table.jsx";
-import EventEmitter from "services/eventEmitter.js";
+import Popover from "@material-ui/core/Popover";
 
 // services
 import calculator from "services/calculator.js";
+import EventEmitter from "services/eventEmitter.js";
 
 class EnergyCalculator extends React.Component {
   constructor(props) {
@@ -30,9 +35,16 @@ class EnergyCalculator extends React.Component {
       trxAmount: "",
       frozenEnergyInit: "",
       frozenEnergy: "",
+      frozenRatio: "1",
       hexAddress: "",
       feeLimit: "",
-      maxEnergy: {}
+      feeLimitState: "",
+      feeLimitRatio: "1",
+      maxEnergy: {},
+      TotalEnergyWeight: "",
+      formulaState: false,
+      anchorElState: null,
+      formula: ""
     };
   }
   componentDidMount() {
@@ -46,30 +58,59 @@ class EnergyCalculator extends React.Component {
     EventEmitter.unSubscribe("changeNet");
   }
   handleInputChange(event, name) {
-    this.setState({ [name]: event.target.value });
+    let v = event.target.value;
+    switch (name) {
+      case "feeLimit":
+        if (v >= 0 && v <= 1000 / this.state.feeLimitRatio) {
+          this.setState({ feeLimitState: "success" });
+        } else {
+          this.setState({ feeLimitState: "error" });
+        }
+        this.setState({ [name]: v });
+        break;
+      case "formulaState":
+        this.setState({
+          anchorElState: this.state.formulaState ? null : event.currentTarget
+        });
+        this.setState({ formulaState: this.state.formulaState ? false : true });
+        break;
+      default:
+        this.setState({ [name]: v });
+        break;
+    }
   }
   async calcEnergy(isInit) {
-    let energy = await calculator.getFrozenEnergy(
-      isInit ? 1 : this.state.trxAmount
+    let data = await calculator.getFrozenEnergy(
+      isInit ? 1 : this.state.trxAmount * this.state.frozenRatio
     );
     if (isInit) {
       this.setState({
-        frozenEnergyInit: energy,
+        frozenEnergyInit: data.energy,
         frozenEnergy: "",
-        maxEnergy: {}
+        maxEnergy: {},
+        furmula:
+          "1 TRX = TotalEnergyLimit (" +
+          data.accountResource.TotalEnergyLimit.toLocaleString() +
+          ") / TotalEnergyWeight (" +
+          data.accountResource.TotalEnergyWeight.toLocaleString() +
+          ") = " +
+          data.energy +
+          " energy"
       });
     } else {
       this.setState({
-        frozenEnergy: energy
+        frozenEnergy: data.energy
       });
     }
   }
   async calcMaxEnergyLimit() {
-    let data = await calculator.getMaxEnergyLimit(
-      this.state.hexAddress,
-      this.state.feeLimit
-    );
-    this.setState({ maxEnergy: data });
+    if (this.state.feeLimitState === "success") {
+      let data = await calculator.getMaxEnergyLimit(
+        this.state.hexAddress,
+        this.state.feeLimit * this.state.feeLimitRatio
+      );
+      this.setState({ maxEnergy: data });
+    }
   }
   render() {
     const { classes } = this.props;
@@ -81,26 +122,75 @@ class EnergyCalculator extends React.Component {
               <h4 className={classes.cardIconTitle}>
                 Calculate Energy by freezing TRX &nbsp;&nbsp;
                 <strong>1 TRX = {this.state.frozenEnergyInit} Energy</strong>
+                <img
+                  className={classes.formulaIcon}
+                  src={formulaIco}
+                  alt="formula"
+                  onClick={event =>
+                    this.handleInputChange(event, "formulaState")
+                  }
+                />
               </h4>
+              <Popover
+                id="formula-popover"
+                open={this.state.formulaState}
+                anchorEl={this.state.anchorElState}
+                onClose={event => this.handleInputChange(event, "formulaState")}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right"
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left"
+                }}
+              >
+                <Typography className={classes.formulaContent}>
+                  <strong>{this.state.furmula}</strong>
+                </Typography>
+              </Popover>
             </CardHeader>
             <CardBody>
               <form>
-                <CustomInput
-                  labelText="Please input frozen TRX amount"
-                  id="trx_amount"
-                  formControlProps={{
-                    fullWidth: true
-                  }}
-                  inputProps={{
-                    type: "text",
-                    defaultValue: this.state.trxAmount,
-                    onChange: event =>
-                      this.handleInputChange(event, "trxAmount")
-                  }}
-                />
-                <Button color="rose" onClick={event => this.calcEnergy(false)}>
-                  Calculate
-                </Button>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={9}>
+                    <CustomInput
+                      labelText="Frozen TRX amount"
+                      id="trx_amount"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      inputProps={{
+                        type: "text",
+                        defaultValue: this.state.trxAmount,
+                        onChange: event =>
+                          this.handleInputChange(event, "trxAmount")
+                      }}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={3}>
+                    <MuiThemeProvider theme={muiTheme}>
+                      <NativeSelect
+                        className={classes.selectBtn}
+                        defaultValue={this.state.frozenRatio}
+                        onChange={event =>
+                          this.handleInputChange(event, "frozenRatio")
+                        }
+                      >
+                        <option value={"1"}>Trx</option>
+                        <option value={"0.000001"}>Sun</option>
+                      </NativeSelect>
+                    </MuiThemeProvider>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12}>
+                    <Button
+                      color="rose"
+                      onClick={event => this.calcEnergy(false)}
+                    >
+                      Calculate
+                    </Button>
+                  </GridItem>
+                </GridContainer>
               </form>
             </CardBody>
           </Card>
@@ -121,7 +211,8 @@ class EnergyCalculator extends React.Component {
                       }}
                       inputProps={{
                         type: "text",
-                        value: this.state.frozenEnergy
+                        value: this.state.frozenEnergy,
+                        disabled: true
                       }}
                     />
                   </GridItem>
@@ -139,35 +230,60 @@ class EnergyCalculator extends React.Component {
             </CardHeader>
             <CardBody>
               <form>
-                <CustomInput
-                  labelText="Please input your hex address"
-                  id="hex_address"
-                  formControlProps={{
-                    fullWidth: true
-                  }}
-                  inputProps={{
-                    type: "text",
-                    onChange: event =>
-                      this.handleInputChange(event, "hexAddress")
-                  }}
-                />
-                <CustomInput
-                  labelText="Please input your fee limit for contract"
-                  id="fee_limit"
-                  formControlProps={{
-                    fullWidth: true
-                  }}
-                  inputProps={{
-                    type: "text",
-                    onChange: event => this.handleInputChange(event, "feeLimit")
-                  }}
-                />
-                <Button
-                  color="rose"
-                  onClick={event => this.calcMaxEnergyLimit()}
-                >
-                  Calculate
-                </Button>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={9}>
+                    <CustomInput
+                      labelText="Hex account address"
+                      id="hex_address"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      inputProps={{
+                        type: "text",
+                        onChange: event =>
+                          this.handleInputChange(event, "hexAddress")
+                      }}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={9}>
+                    <CustomInput
+                      success={this.state.feeLimitState === "success"}
+                      error={this.state.feeLimitState === "error"}
+                      labelText="Fee limit for contract (Max=1000 Trx)"
+                      id="fee_limit"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      inputProps={{
+                        type: "text",
+                        onChange: event =>
+                          this.handleInputChange(event, "feeLimit")
+                      }}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={3}>
+                    <MuiThemeProvider theme={muiTheme}>
+                      <NativeSelect
+                        className={classes.selectBtn}
+                        defaultValue={this.state.frozenRatio}
+                        onChange={event =>
+                          this.handleInputChange(event, "feeLimitRatio")
+                        }
+                      >
+                        <option value={"1"}>Trx</option>
+                        <option value={"0.000001"}>Sun</option>
+                      </NativeSelect>
+                    </MuiThemeProvider>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={12}>
+                    <Button
+                      color="rose"
+                      onClick={event => this.calcMaxEnergyLimit()}
+                    >
+                      Calculate
+                    </Button>
+                  </GridItem>
+                </GridContainer>
               </form>
             </CardBody>
           </Card>
@@ -175,18 +291,22 @@ class EnergyCalculator extends React.Component {
         <GridItem xs={12} sm={12} md={6}>
           <Card>
             <CardHeader color="rose" icon>
-              <h4 className={classes.cardIconTitle}>Max Energy Result</h4>
+              <h4 className={classes.cardIconTitle}>Max Energy Limit</h4>
             </CardHeader>
             <CardBody>
-              <Table
-                striped
-                tableHead={[
-                  "Max energy limit",
-                  this.state.maxEnergy.maxEnergyLimit
-                ]}
-                tableData={[]}
-                coloredColls={[1]}
-                colorsColls={["primary"]}
+              <CustomInput
+                id="max_energy_limit"
+                formControlProps={{
+                  fullWidth: true
+                }}
+                inputProps={{
+                  type: "text",
+                  value:
+                    this.state.maxEnergy.maxEnergyLimit === undefined
+                      ? ""
+                      : this.state.maxEnergy.maxEnergyLimit,
+                  disabled: true
+                }}
               />
               <ExpansionPanel>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -259,7 +379,7 @@ class EnergyCalculator extends React.Component {
                       [
                         "(8)",
                         <strong>Max energy limit</strong>,
-                        "When Account Remaining Energy (1) is bigger than Fee limit energy (7),  choose minimum value between (4) and (7), otherwise choose (4)}",
+                        "When Account Remaining Energy (1) is bigger than Fee limit energy (7),  choose minimum value between (4) and (7), otherwise choose (4).",
                         <strong>{this.state.maxEnergy.maxEnergyLimit}</strong>
                       ]
                     ]}
