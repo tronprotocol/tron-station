@@ -1,26 +1,44 @@
 import TronWeb from "tronweb";
 import netRouter from "services/netRouter.js";
+import Util from "utils/utils.js";
+import _ from "lodash";
 
-var AccountResource = function() {
-  this.balance = 0;
-  this.balanceEnergy = 0;
-  this.energyLimit = 0;
-  this.energyUsed = 0;
-  this.totalEnergyLimit = 0;
-  this.totalEnergyWeight = 0;
-  this.remainEnergyLimit = 0;
-  this.feeLimit = 0;
-  this.feeLimitEnergy = 0;
-  this.maxEnergyLimit = 0;
-  this.freeBandWidthLimit = 0;
-  this.freeBandWidthUsed = 0;
-  this.bandWidthLimit = 0;
-  this.bandWidthUsed = 0;
-  this.totalBandWidthLimit = 0;
-  this.totalBandWidthWeight = 0;
-  this.maxBandWidthLimit = 0;
-  this.ratio = 0;
-};
+function AccountResource() {
+  return {
+    balance: 0,
+    balanceEnergy: 0,
+    energyLimit: 0,
+    energyUsed: 0,
+    totalEnergyLimit: 0,
+    totalEnergyWeight: 0,
+    remainEnergyLimit: 0,
+    feeLimit: 0,
+    feeLimitEnergy: 0,
+    maxEnergyLimit: 0,
+    freeBandWidthLimit: 0,
+    freeBandWidthUsed: 0,
+    bandWidthLimit: 0,
+    bandWidthUsed: 0,
+    totalBandWidthLimit: 0,
+    totalBandWidthWeight: 0,
+    maxBandWidthLimit: 0,
+    ratio: 0
+  };
+}
+
+function Witness() {
+  return {
+    address: "",
+    name: "",
+    url: "",
+    votes: 0,
+    votesdiff: 0,
+    votesPersentage: 0,
+    voteReward: 0,
+    blockReward: 0,
+    totalReward: 0
+  };
+}
 
 class Calculator {
   constructor() {
@@ -141,6 +159,65 @@ class Calculator {
     ar.ratio = ratio.toFixed(4);
 
     return ar;
+  }
+
+  async getSuperRepresentatives() {
+    const srs = await this._tronWeb.trx.listSuperRepresentatives();
+    let data = [];
+    let srData = [];
+    let candidateData = [];
+    let totalVotes = _.sumBy(srs, sr => {
+      return sr.voteCount;
+    });
+    let totalVoteReward = 16 * 20 * 60 * 24;
+    let totalBlockReward = 2 * totalVoteReward;
+    await Promise.all(
+      srs.map(async sr => {
+        let witness = new Witness();
+        const account = await this.getAccount(sr.address);
+        if (account.account_name !== undefined) {
+          witness.name = Util.byteToString(
+            Util.hexstring2btye(account.account_name)
+          );
+        } else {
+          witness.name = sr.url;
+        }
+        witness.address = sr.address;
+        witness.votes = this._filterData(sr.voteCount);
+        witness.votesPersentage = (100 * (witness.votes / totalVotes)).toFixed(
+          2
+        );
+        witness.url = sr.url;
+        witness.voteReward = Math.ceil(
+          totalVoteReward * (witness.votes / totalVotes)
+        );
+        witness.blockReward = Math.ceil(totalBlockReward / 27);
+        witness.totalReward = witness.voteReward + witness.blockReward;
+        data.push(witness);
+      })
+    );
+    data = _.sortBy(data, d => {
+      return d.votes * -1;
+    });
+
+    data.map((sr, index) => {
+      if (index < 27) {
+        srData.push(sr);
+      } else {
+        candidateData.push(sr);
+      }
+      return 0;
+    });
+    return {
+      srData: srData,
+      candidateData: candidateData,
+      allData: data,
+      totalVotes: totalVotes
+    };
+  }
+
+  async getAccount(address) {
+    return this._tronWeb.trx.getAccount(address);
   }
 }
 

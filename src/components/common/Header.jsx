@@ -11,7 +11,7 @@ import MoreVert from "@material-ui/icons/MoreVert";
 import ViewList from "@material-ui/icons/ViewList";
 import Menu from "@material-ui/icons/Menu";
 import NativeSelect from "@material-ui/core/NativeSelect";
-import Button from "components/common/Button.jsx";
+import CustomButton from "components/common/CustomButton.jsx";
 
 // services
 import netRouter from "services/netRouter.js";
@@ -91,30 +91,34 @@ class Header extends React.Component {
           <Hidden smDown implementation="css">
             <div className={sidebarMinimize}>
               {this.props.miniActive ? (
-                <Button
+                <CustomButton
                   justIcon
                   round
                   color="white"
                   onClick={this.props.sidebarMinimize}
                 >
                   <ViewList className={classes.sidebarMiniIcon} />
-                </Button>
+                </CustomButton>
               ) : (
-                <Button
+                <CustomButton
                   justIcon
                   round
                   color="white"
                   onClick={this.props.sidebarMinimize}
                 >
                   <MoreVert className={classes.sidebarMiniIcon} />
-                </Button>
+                </CustomButton>
               )}
             </div>
           </Hidden>
           <div className={classes.flex}>
-            <Button href="#" className={classes.title} color="transparent">
+            <CustomButton
+              href="#"
+              className={classes.title}
+              color="transparent"
+            >
               {this.makeBrand()}
-            </Button>
+            </CustomButton>
           </div>
           <Hidden smDown implementation="css">
             <div className={classes.mark}>
@@ -182,7 +186,7 @@ class Header extends React.Component {
             </div>
           </Hidden>
           <Hidden mdUp implementation="css">
-            <Button
+            <CustomButton
               className={classes.appResponsive}
               color="transparent"
               justIcon
@@ -190,7 +194,7 @@ class Header extends React.Component {
               onClick={this.props.handleDrawerToggle}
             >
               <Menu />
-            </Button>
+            </CustomButton>
           </Hidden>
         </Toolbar>
       </AppBar>

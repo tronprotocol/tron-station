@@ -11,7 +11,7 @@ import Card from "components/common/Card.jsx";
 import CardHeader from "components/common/CardHeader.jsx";
 import CardBody from "components/common/CardBody.jsx";
 import CustomInput from "components/common/CustomInput.jsx";
-import Button from "components/common/Button.jsx";
+import CustomButton from "components/common/CustomButton.jsx";
 
 class UnitCalculator extends React.Component {
   constructor(props) {
@@ -73,9 +73,9 @@ class UnitCalculator extends React.Component {
                       this.handleInputChange(event, "trxAmount")
                   }}
                 />
-                <Button color="rose" onClick={event => this.calcSun()}>
+                <CustomButton color="rose" onClick={event => this.calcSun()}>
                   Calculate
-                </Button>
+                </CustomButton>
               </form>
             </CardBody>
           </Card>
@@ -128,9 +128,9 @@ class UnitCalculator extends React.Component {
                       this.handleInputChange(event, "sunAmount")
                   }}
                 />
-                <Button color="rose" onClick={event => this.calcTrx()}>
+                <CustomButton color="rose" onClick={event => this.calcTrx()}>
                   Calculate
-                </Button>
+                </CustomButton>
               </form>
             </CardBody>
           </Card>

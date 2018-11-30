@@ -20,7 +20,7 @@ import Card from "components/common/Card.jsx";
 import CardHeader from "components/common/CardHeader.jsx";
 import CardBody from "components/common/CardBody.jsx";
 import CustomInput from "components/common/CustomInput.jsx";
-import Button from "components/common/Button.jsx";
+import CustomButton from "components/common/CustomButton.jsx";
 import Table from "components/common/Table.jsx";
 import Popover from "@material-ui/core/Popover";
 
@@ -43,6 +43,7 @@ class BandWidthCalculator extends React.Component {
       formula: ""
     };
   }
+
   componentDidMount() {
     let self = this;
     this.calcBandwidth(true);
@@ -50,9 +51,11 @@ class BandWidthCalculator extends React.Component {
       self.calcBandwidth(true);
     });
   }
+
   componentWillUnmount() {
     EventEmitter.unSubscribe("changeNet");
   }
+
   handleInputChange(event, name) {
     let v = event.target.value;
     switch (name) {
@@ -67,6 +70,7 @@ class BandWidthCalculator extends React.Component {
         break;
     }
   }
+
   async calcBandwidth(isInit) {
     let data = await calculator.getFrozenBandwidth(
       isInit ? 1 : this.state.trxAmount * this.state.frozenRatio
@@ -91,10 +95,12 @@ class BandWidthCalculator extends React.Component {
       });
     }
   }
+
   async calcMaxBandwidthLimit() {
     let data = await calculator.getMaxBandWidthLimit(this.state.hexAddress);
     this.setState({ maxBandwidth: data });
   }
+
   render() {
     const { classes } = this.props;
     return (
@@ -168,12 +174,12 @@ class BandWidthCalculator extends React.Component {
                     </MuiThemeProvider>
                   </GridItem>
                   <GridItem xs={12} sm={12} md={9}>
-                    <Button
+                    <CustomButton
                       color="rose"
                       onClick={event => this.calcBandwidth(false)}
                     >
                       Calculate
-                    </Button>
+                    </CustomButton>
                   </GridItem>
                 </GridContainer>
               </form>
@@ -227,12 +233,12 @@ class BandWidthCalculator extends React.Component {
                       this.handleInputChange(event, "hexAddress")
                   }}
                 />
-                <Button
+                <CustomButton
                   color="rose"
                   onClick={event => this.calcMaxBandwidthLimit()}
                 >
                   Calculate
-                </Button>
+                </CustomButton>
               </form>
             </CardBody>
           </Card>

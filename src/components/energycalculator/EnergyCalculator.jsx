@@ -20,7 +20,7 @@ import Card from "components/common/Card.jsx";
 import CardHeader from "components/common/CardHeader.jsx";
 import CardBody from "components/common/CardBody.jsx";
 import CustomInput from "components/common/CustomInput.jsx";
-import Button from "components/common/Button.jsx";
+import CustomButton from "components/common/CustomButton.jsx";
 import Table from "components/common/Table.jsx";
 import Popover from "@material-ui/core/Popover";
 
@@ -47,6 +47,7 @@ class EnergyCalculator extends React.Component {
       formula: ""
     };
   }
+
   componentDidMount() {
     let self = this;
     this.calcEnergy(true);
@@ -54,9 +55,11 @@ class EnergyCalculator extends React.Component {
       self.calcEnergy(true);
     });
   }
+
   componentWillUnmount() {
     EventEmitter.unSubscribe("changeNet");
   }
+
   handleInputChange(event, name) {
     let v = event.target.value;
     switch (name) {
@@ -79,6 +82,7 @@ class EnergyCalculator extends React.Component {
         break;
     }
   }
+
   async calcEnergy(isInit) {
     let data = await calculator.getFrozenEnergy(
       isInit ? 1 : this.state.trxAmount * this.state.frozenRatio
@@ -103,6 +107,7 @@ class EnergyCalculator extends React.Component {
       });
     }
   }
+
   async calcMaxEnergyLimit() {
     if (this.state.feeLimitState === "success") {
       let data = await calculator.getMaxEnergyLimit(
@@ -112,6 +117,7 @@ class EnergyCalculator extends React.Component {
       this.setState({ maxEnergy: data });
     }
   }
+
   render() {
     const { classes } = this.props;
     return (
@@ -183,12 +189,12 @@ class EnergyCalculator extends React.Component {
                     </MuiThemeProvider>
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12}>
-                    <Button
+                    <CustomButton
                       color="rose"
                       onClick={event => this.calcEnergy(false)}
                     >
                       Calculate
-                    </Button>
+                    </CustomButton>
                   </GridItem>
                 </GridContainer>
               </form>
@@ -276,12 +282,12 @@ class EnergyCalculator extends React.Component {
                     </MuiThemeProvider>
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12}>
-                    <Button
+                    <CustomButton
                       color="rose"
                       onClick={event => this.calcMaxEnergyLimit()}
                     >
                       Calculate
-                    </Button>
+                    </CustomButton>
                   </GridItem>
                 </GridContainer>
               </form>
