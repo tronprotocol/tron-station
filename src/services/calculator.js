@@ -33,7 +33,7 @@ function Witness() {
     url: "",
     votes: 0,
     votesdiff: 0,
-    votesPersentage: 0,
+    votesPercentage: 0,
     voteReward: 0,
     blockReward: 0,
     totalReward: 0
@@ -184,7 +184,7 @@ class Calculator {
         }
         witness.address = sr.address;
         witness.votes = this._filterData(sr.voteCount);
-        witness.votesPersentage = (100 * (witness.votes / totalVotes)).toFixed(
+        witness.votesPercentage = (100 * (witness.votes / totalVotes)).toFixed(
           2
         );
         witness.url = sr.url;

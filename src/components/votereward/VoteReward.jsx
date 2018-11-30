@@ -182,13 +182,14 @@ class VoteReward extends React.Component {
             <CardBody>
               <form>
                 <GridContainer>
-                  <GridItem xs={12} sm={12} md={3}>
+                  <GridItem xs={12} sm={12} md={5}>
                     <FormLabel className={classes.labelHorizontal}>
-                      Added Votes:
+                      New Votes / Exsited SR added votes:
                     </FormLabel>
                   </GridItem>
-                  <GridItem xs={12} sm={12} md={6}>
+                  <GridItem xs={12} sm={12} md={7}>
                     <CustomInput
+                      labelText="Votes amount"
                       id=""
                       formControlProps={{
                         fullWidth: true
@@ -263,7 +264,7 @@ class VoteReward extends React.Component {
                     <TableCell>{this.state.calcReward.totalVotes}</TableCell>
                   </TableRow>
                   <TableRow className={classes.miniTableRow}>
-                    <TableCell>Votes Persentage</TableCell>
+                    <TableCell>Votes Percentage</TableCell>
                     <TableCell>{this.state.calcReward.percentage}</TableCell>
                   </TableRow>
                   <TableRow className={classes.miniTableRow}>
@@ -336,7 +337,7 @@ class VoteReward extends React.Component {
                                 {row.votes.toLocaleString()}
                               </TableCell>
                               <TableCell numeric>
-                                {row.votesPersentage + "%"}
+                                {row.votesPercentage + "%"}
                               </TableCell>
                               <TableCell numeric>
                                 {row.voteReward.toLocaleString()}
@@ -373,7 +374,7 @@ class VoteReward extends React.Component {
                                 ).toLocaleString()}
                               </TableCell>
                               <TableCell numeric>
-                                {row.votesPersentage + "%"}
+                                {row.votesPercentage + "%"}
                               </TableCell>
                               <TableCell numeric>
                                 {row.voteReward.toLocaleString()}
