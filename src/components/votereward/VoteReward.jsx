@@ -211,7 +211,7 @@ class VoteReward extends React.Component {
                           }
                         />
                       }
-                      label="Is existed SR/Candidate in Tron"
+                      label="Is existed SR/Candidate"
                     />
                     <Button
                       disabled={!this.state.isSrChecked}

@@ -29,7 +29,7 @@ class UnitCalculator extends React.Component {
   }
 
   async calcSun() {
-    let sun = parseFloat(parseFloat(this.state.trxAmount) * 10000000);
+    let sun = parseFloat(parseFloat(this.state.trxAmount) * 1000000);
     this.setState({
       convertedSunAmount: Number(sun)
         .toFixed(20)
@@ -38,11 +38,9 @@ class UnitCalculator extends React.Component {
   }
 
   async calcTrx() {
-    let trx = parseFloat(parseFloat(this.state.sunAmount) / 10000000);
+    let trx = parseFloat(parseFloat(this.state.sunAmount) / 1000000);
     this.setState({
-      convertedTrxAmount: Number(trx)
-        .toFixed(20)
-        .replace(/\.?0+$/, "")
+      convertedTrxAmount: trx
     });
   }
 
@@ -55,7 +53,7 @@ class UnitCalculator extends React.Component {
             <CardHeader color="rose" icon>
               <h4 className={classes.cardIconTitle}>
                 Calculate TRX to SUN &nbsp;&nbsp;
-                <strong>1 TRX = 10000000 SUN</strong>
+                <strong>1 TRX = 1,000,000 SUN</strong>
               </h4>
             </CardHeader>
             <CardBody>
@@ -96,7 +94,14 @@ class UnitCalculator extends React.Component {
                       }}
                       inputProps={{
                         type: "text",
-                        value: this.state.convertedSunAmount
+                        value:
+                          isNaN(this.state.convertedSunAmount) ||
+                          this.state.convertedSunAmount === ""
+                            ? ""
+                            : Number(
+                                this.state.convertedSunAmount
+                              ).toLocaleString(),
+                        disabled: true
                       }}
                     />
                   </GridItem>
@@ -110,7 +115,7 @@ class UnitCalculator extends React.Component {
             <CardHeader color="rose" icon>
               <h4 className={classes.cardIconTitle}>
                 Calculate SUN to TRX &nbsp;&nbsp;
-                <strong>1 SUN = 0.0000001 TRX</strong>
+                <strong>1 SUN = 0.000001 TRX</strong>
               </h4>
             </CardHeader>
             <CardBody>
@@ -151,7 +156,14 @@ class UnitCalculator extends React.Component {
                       }}
                       inputProps={{
                         type: "text",
-                        value: this.state.convertedTrxAmount
+                        value:
+                          isNaN(this.state.convertedTrxAmount) ||
+                          this.state.convertedTrxAmount === ""
+                            ? ""
+                            : this.state.convertedTrxAmount < 1
+                              ? this.state.convertedTrxAmount
+                              : this.state.convertedTrxAmount.toLocaleString(),
+                        disabled: true
                       }}
                     />
                   </GridItem>
