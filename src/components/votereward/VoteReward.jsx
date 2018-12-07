@@ -3,6 +3,7 @@ import React from "react";
 // styles
 import { withStyles } from "@material-ui/core/styles";
 import regularFormsStyle from "assets/jss/regularFormsStyle";
+import formulaIco from "assets/img/question-black.png";
 
 // components
 import GridContainer from "components/common/GridContainer.jsx";
@@ -29,6 +30,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
+import Popover from "@material-ui/core/Popover";
+import Typography from "@material-ui/core/Typography";
 
 // services
 import calculator from "services/calculator.js";
@@ -50,9 +53,11 @@ class VoteReward extends React.Component {
       addedVotes: 0,
       srQuery: "",
       srSelect: null,
-      srSelectContent: "Select",
+      srSelectContent: "",
       calcReward: {},
-      requiredError: ""
+      formulaState: false,
+      anchorElState: null,
+      formula: ""
     };
   }
 
@@ -60,6 +65,23 @@ class VoteReward extends React.Component {
     let thiz = this;
     this.getSuperRepresentatives();
     EventEmitter.subscribe("changeNet", function() {
+      thiz.setState({
+        srData: [],
+        candidateData: [],
+        allData: [],
+        queryData: [],
+        totalVotes: 0,
+        tabIdx: 0,
+        dialogOpen: false,
+        isSrChecked: false,
+        srQuery: "",
+        srSelect: null,
+        srSelectContent: "",
+        calcReward: {},
+        formulaState: false,
+        anchorElState: null,
+        formula: ""
+      });
       thiz.getSuperRepresentatives();
     });
   }
@@ -77,12 +99,25 @@ class VoteReward extends React.Component {
         this.setState({ [name]: this.state.tabIdx === 0 ? 1 : 0 });
         break;
       case "isSrChecked":
+        if (!this.state.isSrChecked) {
+          this.setState({
+            dialogOpen: true,
+            queryData: this.state.allData
+          });
+        } else {
+          this.setState({
+            srSelect: null,
+            srSelectContent: ""
+          });
+        }
         this.setState({ [name]: !this.state.isSrChecked });
         break;
       case "dialogOpen":
+        if (this.state.dialogOpen && this.state.srSelectContent === "") {
+          this.setState({ isSrChecked: false });
+        }
         this.setState({
-          [name]: !this.state.dialogOpen,
-          queryData: this.state.allData
+          [name]: !this.state.dialogOpen
         });
         break;
       case "srQuery":
@@ -98,6 +133,25 @@ class VoteReward extends React.Component {
           srSelectContent: this.state.allData[value].name,
           dialogOpen: !this.state.dialogOpen
         });
+        break;
+      case "formulaState":
+        if (value === "votereward") {
+          this.setState({
+            furmula:
+              "Daily Vote Reward = Total Vote Reward (460,800) * Vote Percentage"
+          });
+        } else if (value === "blockreward") {
+          this.setState({
+            furmula:
+              "Daily Block Reward = Total Vote Reward (921,600) / SR Amount (" +
+              this.state.srData.length +
+              ")"
+          });
+        }
+        this.setState({
+          anchorElState: this.state.formulaState ? null : event.currentTarget
+        });
+        this.setState({ formulaState: this.state.formulaState ? false : true });
         break;
       default:
         break;
@@ -148,9 +202,12 @@ class VoteReward extends React.Component {
         ? "New SR"
         : "New Candidate";
     let totalVotes = this.state.totalVotes + addedVotes;
-    let percentage = ((100 * totalSrVotes) / totalVotes).toFixed(2);
+    let percentage = ((100 * totalSrVotes) / totalVotes).toFixed(6);
     let voteReward = Math.ceil(16 * 20 * 60 * 24 * (totalSrVotes / totalVotes));
-    let blockReward = Math.ceil((32 * 20 * 60 * 24) / 27);
+    let blockReward =
+      rank <= this.state.srData.length
+        ? Math.ceil((32 * 20 * 60 * 24) / this.state.srData.length)
+        : 0;
     let totalReward = blockReward + voteReward;
     let rewardObj = {
       rank: rank,
@@ -213,18 +270,17 @@ class VoteReward extends React.Component {
                       }
                       label="Is existed SR/Candidate"
                     />
-                    <Button
-                      disabled={!this.state.isSrChecked}
-                      className={classes.linkBtn}
-                      onClick={event => this.handleAction(event, "dialogOpen")}
-                    >
-                      {this.state.srSelectContent}
-                    </Button>
-                    <font className={classes.required}>
-                      {this.state.isSrChecked && this.state.srSelect == null
-                        ? "(*required)"
-                        : ""}
-                    </font>
+                    {this.state.srSelectContent && (
+                      <Button
+                        disabled={!this.state.isSrChecked}
+                        className={classes.linkBtn}
+                        onClick={event =>
+                          this.handleAction(event, "dialogOpen")
+                        }
+                      >
+                        {this.state.srSelectContent}
+                      </Button>
+                    )}
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12}>
                     <CustomButton
@@ -268,15 +324,19 @@ class VoteReward extends React.Component {
                     <TableCell>{this.state.calcReward.percentage}</TableCell>
                   </TableRow>
                   <TableRow className={classes.miniTableRow}>
-                    <TableCell>Vote Reward</TableCell>
+                    <TableCell>Vote Reward (TRX)</TableCell>
                     <TableCell>{this.state.calcReward.voteReward}</TableCell>
                   </TableRow>
                   <TableRow className={classes.miniTableRow}>
-                    <TableCell>Block Reward</TableCell>
-                    <TableCell>{this.state.calcReward.blockReward}</TableCell>
+                    <TableCell>Block Reward (TRX)</TableCell>
+                    <TableCell>
+                      {Number(this.state.calcReward.blockReward) === 0
+                        ? "N/A"
+                        : this.state.calcReward.blockReward}
+                    </TableCell>
                   </TableRow>
                   <TableRow className={classes.miniTableRow}>
-                    <TableCell>Total Reward</TableCell>
+                    <TableCell>Total Reward (TRX)</TableCell>
                     <TableCell>{this.state.calcReward.totalReward}</TableCell>
                   </TableRow>
                 </TableBody>
@@ -288,7 +348,7 @@ class VoteReward extends React.Component {
           <Card>
             <CardHeader color="success" icon>
               <h4 className={classes.cardIconTitle}>
-                Current Super Representatives Vote Reward
+                Current Super Representatives Daily Vote Reward
               </h4>
             </CardHeader>
             <CardBody>
@@ -313,9 +373,57 @@ class VoteReward extends React.Component {
                           <TableCell numeric>SR Votes Difference</TableCell>
                         )}
                         <TableCell numeric>Votes Percentage</TableCell>
-                        <TableCell numeric>Daily Vote Reward (TRX)</TableCell>
-                        <TableCell numeric>Daily Block Reward (TRX)</TableCell>
-                        <TableCell numeric>Daily Total Reward (TRX)</TableCell>
+                        <TableCell numeric>
+                          Vote Reward (TRX)
+                          <img
+                            className={classes.formulaIcon}
+                            src={formulaIco}
+                            alt="formula"
+                            onClick={event =>
+                              this.handleAction(
+                                event,
+                                "formulaState",
+                                "votereward"
+                              )
+                            }
+                          />
+                        </TableCell>
+                        <Popover
+                          id="formula-popover"
+                          open={this.state.formulaState}
+                          anchorEl={this.state.anchorElState}
+                          onClose={event =>
+                            this.handleAction(event, "formulaState")
+                          }
+                          anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "right"
+                          }}
+                          transformOrigin={{
+                            vertical: "top",
+                            horizontal: "left"
+                          }}
+                        >
+                          <Typography className={classes.formulaContent}>
+                            <strong>{this.state.furmula}</strong>
+                          </Typography>
+                        </Popover>
+                        <TableCell numeric>
+                          Block Reward (TRX)
+                          <img
+                            className={classes.formulaIcon}
+                            src={formulaIco}
+                            alt="formula"
+                            onClick={event =>
+                              this.handleAction(
+                                event,
+                                "formulaState",
+                                "blockreward"
+                              )
+                            }
+                          />
+                        </TableCell>
+                        <TableCell numeric>Total Reward (TRX)</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -379,9 +487,7 @@ class VoteReward extends React.Component {
                               <TableCell numeric>
                                 {row.voteReward.toLocaleString()}
                               </TableCell>
-                              <TableCell numeric>
-                                {row.blockReward.toLocaleString()}
-                              </TableCell>
+                              <TableCell numeric>{"N/A"}</TableCell>
                               <TableCell numeric>
                                 {row.totalReward.toLocaleString()}
                               </TableCell>

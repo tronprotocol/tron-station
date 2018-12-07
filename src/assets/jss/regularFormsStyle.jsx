@@ -52,7 +52,8 @@ const regularFormsStyle = {
   linkBtn: {
     marginTop: "1px",
     fontWeight: "400",
-    fontSize: "13px"
+    fontSize: "13px",
+    backgroundColor: "#EEEEEE"
   },
   formulaIcon: {
     width: "15px",

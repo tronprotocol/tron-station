@@ -171,6 +171,7 @@ class Calculator {
     });
     let totalVoteReward = 16 * 20 * 60 * 24;
     let totalBlockReward = 2 * totalVoteReward;
+    let srAmount = netRouter.isMainNet() ? 27 : srs.length;
     await Promise.all(
       srs.map(async sr => {
         let witness = new Witness();
@@ -185,13 +186,13 @@ class Calculator {
         witness.address = sr.address;
         witness.votes = this._filterData(sr.voteCount);
         witness.votesPercentage = (100 * (witness.votes / totalVotes)).toFixed(
-          2
+          6
         );
         witness.url = sr.url;
         witness.voteReward = Math.ceil(
           totalVoteReward * (witness.votes / totalVotes)
         );
-        witness.blockReward = Math.ceil(totalBlockReward / 27);
+        witness.blockReward = Math.ceil(totalBlockReward / srAmount);
         witness.totalReward = witness.voteReward + witness.blockReward;
         data.push(witness);
       })
@@ -204,6 +205,8 @@ class Calculator {
       if (index < 27) {
         srData.push(sr);
       } else {
+        sr.blockReward = 0;
+        sr.totalReward = sr.voteReward;
         candidateData.push(sr);
       }
       return 0;

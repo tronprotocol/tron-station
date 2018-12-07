@@ -29,8 +29,11 @@ const netRouter = {
     return nets[this.defaultNet];
   },
   setNet(net) {
-    this._node = net;
+    this._currNet = net;
     this.setLocalStorage(storageKey, net);
+  },
+  isMainNet() {
+    return this._currNet === defaultNet;
   }
 };
 
