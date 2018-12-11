@@ -138,12 +138,12 @@ class VoteReward extends React.Component {
         if (value === "votereward") {
           this.setState({
             furmula:
-              "Daily Vote Reward = Total Vote Reward (460,800) * Vote Percentage"
+              "Daily Vote Reward = Total Vote Reward (460,800) * % of Votes"
           });
         } else if (value === "blockreward") {
           this.setState({
             furmula:
-              "Daily Block Reward = Total Vote Reward (921,600) / SR Amount (" +
+              "Daily Block Reward = Total Block Reward (921,600) / # of SRs (" +
               this.state.srData.length +
               ")"
           });
@@ -246,7 +246,7 @@ class VoteReward extends React.Component {
                   </GridItem>
                   <GridItem xs={12} sm={12} md={7}>
                     <CustomInput
-                      labelText="Votes amount"
+                      labelText="# of Votes"
                       id=""
                       formControlProps={{
                         fullWidth: true
@@ -312,7 +312,7 @@ class VoteReward extends React.Component {
                     <TableCell>{this.state.calcReward.sr}</TableCell>
                   </TableRow>
                   <TableRow className={classes.miniTableRow}>
-                    <TableCell>SR/Candidate Votes</TableCell>
+                    <TableCell># of Votes</TableCell>
                     <TableCell>{this.state.calcReward.votes}</TableCell>
                   </TableRow>
                   <TableRow className={classes.miniTableRow}>
@@ -320,7 +320,7 @@ class VoteReward extends React.Component {
                     <TableCell>{this.state.calcReward.totalVotes}</TableCell>
                   </TableRow>
                   <TableRow className={classes.miniTableRow}>
-                    <TableCell>Votes Percentage</TableCell>
+                    <TableCell>% of Votes</TableCell>
                     <TableCell>{this.state.calcReward.percentage}</TableCell>
                   </TableRow>
                   <TableRow className={classes.miniTableRow}>
@@ -368,11 +368,11 @@ class VoteReward extends React.Component {
                       <TableRow>
                         <TableCell>Rank #</TableCell>
                         <TableCell>SR</TableCell>
-                        <TableCell numeric>Votes</TableCell>
+                        <TableCell numeric># of Votes</TableCell>
                         {this.state.tabIdx === 1 && (
                           <TableCell numeric>SR Votes Difference</TableCell>
                         )}
-                        <TableCell numeric>Votes Percentage</TableCell>
+                        <TableCell numeric>% of Votes</TableCell>
                         <TableCell numeric>
                           Vote Reward (TRX)
                           <img
