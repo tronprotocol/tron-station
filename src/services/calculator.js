@@ -1,5 +1,6 @@
 import TronWeb from "tronweb";
 import netRouter from "services/netRouter.js";
+import httpProvider from "services/httpProvider.js";
 import Util from "utils/utils.js";
 import _ from "lodash";
 
@@ -43,6 +44,7 @@ function Witness() {
 class Calculator {
   constructor() {
     this._net = netRouter.getNet();
+    this._netUrl = this._net.fullNode;
     this._tronWeb = new TronWeb(
       this._net.fullNode,
       this._net.solidityNode,
@@ -53,7 +55,7 @@ class Calculator {
 
   setUpTronWeb() {
     this._net = netRouter.getNet();
-    this._tronWeb.setFullNode(this._net.fullNode);
+    this._tronWeb.setFullNode(this._net.fullNode + "/wallet");
     this._tronWeb.setSolidityNode(this._net.solidityNode);
     this._tronWeb.setEventServer(this._net.eventServer);
     this._tronWeb.setDefaultBlock("latest");
@@ -71,6 +73,10 @@ class Calculator {
     return block.block_header.raw_data.number;
   }
 
+  async getAccount(address) {
+    return this._tronWeb.trx.getAccount(address);
+  }
+
   async getAccountResources(address) {
     if (!address) {
       address = this._net.defaultAddress;
@@ -78,12 +84,25 @@ class Calculator {
     return await this._tronWeb.trx.getAccountResources(address);
   }
 
+  async getChainParametersByName(name) {
+    let response = await httpProvider.post(
+      this._netUrl + "/wallet/getchainparameters"
+    );
+    let proposals = JSON.parse(response)["chainParameter"];
+    let proposal = _.filter(proposals, ["key", name])[0];
+    return proposal["value"];
+  }
+
   async getFrozenEnergy(trx) {
     const resource = await this.getAccountResources();
+    const totalEnergyLimit = await this.getChainParametersByName(
+      "getTotalEnergyLimit"
+    );
     let energy = (
-      (trx * resource.TotalEnergyLimit) /
+      (trx * totalEnergyLimit) /
       resource.TotalEnergyWeight
     ).toLocaleString();
+    resource.TotalEnergyLimit = totalEnergyLimit;
     return { energy: energy, accountResource: resource };
   }
 
@@ -94,11 +113,15 @@ class Calculator {
       account.balance = 0;
     }
     const res = await this.getAccountResources(address);
-    const ratio = res.TotalEnergyLimit / res.TotalEnergyWeight;
+    const totalEnergyLimit = await this.getChainParametersByName(
+      "getTotalEnergyLimit"
+    );
+    const energyFee = await this.getChainParametersByName("getEnergyFee");
+    const ratio = totalEnergyLimit / res.TotalEnergyWeight;
 
     // remaining energy limit
     ar.balance = this._filterData(account.balance) / 1000000; // trx
-    ar.balanceEnergy = this._filterData(account.balance) / 20;
+    ar.balanceEnergy = this._filterData(account.balance) / energyFee;
     ar.energyLimit = this._filterData(res.EnergyLimit); // trx
     ar.energyUsed = this._filterData(res.EnergyUsed);
     ar.remainEnergyLimit = ar.energyLimit + ar.balanceEnergy - ar.energyUsed;
@@ -116,7 +139,7 @@ class Calculator {
 
     ar.maxEnergyLimit = ar.maxEnergyLimit.toLocaleString();
 
-    ar.totalEnergyLimit = res.TotalEnergyLimit;
+    ar.totalEnergyLimit = totalEnergyLimit;
     ar.totalEnergyWeight = res.TotalEnergyWeight;
     ar.ratio = ratio.toFixed(4);
 
@@ -217,10 +240,6 @@ class Calculator {
       allData: data,
       totalVotes: totalVotes
     };
-  }
-
-  async getAccount(address) {
-    return this._tronWeb.trx.getAccount(address);
   }
 }
 
