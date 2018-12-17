@@ -44,7 +44,6 @@ function Witness() {
 class Calculator {
   constructor() {
     this._net = netRouter.getNet();
-    this._netUrl = this._net.fullNode;
     this._tronWeb = new TronWeb(
       this._net.fullNode,
       this._net.solidityNode,
@@ -55,7 +54,7 @@ class Calculator {
 
   setUpTronWeb() {
     this._net = netRouter.getNet();
-    this._tronWeb.setFullNode(this._net.fullNode + "/wallet");
+    this._tronWeb.setFullNode(this._net.fullNode);
     this._tronWeb.setSolidityNode(this._net.solidityNode);
     this._tronWeb.setEventServer(this._net.eventServer);
     this._tronWeb.setDefaultBlock("latest");
@@ -86,7 +85,7 @@ class Calculator {
 
   async getChainParametersByName(name) {
     let response = await httpProvider.post(
-      this._netUrl + "/wallet/getchainparameters"
+      this._net.fullNode + "/wallet/getchainparameters"
     );
     let proposals = JSON.parse(response)["chainParameter"];
     let proposal = _.filter(proposals, ["key", name])[0];
