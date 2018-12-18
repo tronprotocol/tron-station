@@ -117,7 +117,8 @@ class VoteReward extends React.Component {
           this.setState({ isSrChecked: false });
         }
         this.setState({
-          [name]: !this.state.dialogOpen
+          [name]: !this.state.dialogOpen,
+          queryData: this.state.allData
         });
         break;
       case "srQuery":
@@ -129,8 +130,8 @@ class VoteReward extends React.Component {
         break;
       case "srSelect":
         this.setState({
-          srSelect: this.state.allData[value],
-          srSelectContent: this.state.allData[value].name,
+          srSelect: this.state.queryData[value],
+          srSelectContent: this.state.queryData[value].name,
           dialogOpen: !this.state.dialogOpen
         });
         break;
